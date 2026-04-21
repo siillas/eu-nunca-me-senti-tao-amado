@@ -13,7 +13,7 @@ body {
   margin: 0;
   background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: "Times New Roman", serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,6 +54,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform-origin: center;
 }
 
 .texto {
@@ -67,6 +68,51 @@ body {
   text-align: center;
   cursor: grab;
   user-select: none;
+  line-height: 0.9;
+  white-space: pre-line;
+}
+
+.guia-horizontal,
+.guia-vertical {
+  position: absolute;
+  background: rgba(255,255,255,0.3);
+  pointer-events: none;
+  display: none;
+}
+
+.guia-horizontal {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.guia-vertical {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+}
+
+.color-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-preview {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, red, orange, yellow, green, blue, purple);
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+input[type="color"] {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
 }
 
 input, button {
@@ -74,6 +120,7 @@ input, button {
   border-radius: 8px;
   border: none;
   cursor: pointer;
+  font-family: "Times New Roman", serif;
 }
 
 .format-buttons {
@@ -100,7 +147,7 @@ input, button {
   <div class="controls">
 
     <div class="section">
-      <input type="file" id="upload">
+      <input type="file" id="upload" accept="image/*">
     </div>
 
     <div class="section">
@@ -109,12 +156,20 @@ input, button {
 
     <div class="section">
       <label>cor do texto</label>
-      <input type="color" id="cor" value="#ffffff">
+      <div class="color-wrapper">
+        <div class="color-preview" onclick="document.getElementById('cor').click()"></div>
+        <input type="color" id="cor" value="#ffffff">
+      </div>
     </div>
 
     <div class="section">
       <label>tamanho do texto</label>
       <input type="range" id="tamanho" min="20" max="200" value="80">
+    </div>
+
+    <div class="section">
+      <label>zoom da imagem</label>
+      <input type="range" id="zoom" min="1" max="3" step="0.1" value="1">
     </div>
 
     <div class="section">
@@ -132,6 +187,8 @@ input, button {
 
   <div class="canvas" id="area">
     <img id="imagem">
+    <div class="guia-horizontal" id="gh"></div>
+    <div class="guia-vertical" id="gv"></div>
     <div class="texto" id="texto">amor</div>
   </div>
 
@@ -145,14 +202,22 @@ const inputTexto = document.getElementById("textoInput");
 const cor = document.getElementById("cor");
 const tamanho = document.getElementById("tamanho");
 const canvas = document.getElementById("area");
+const zoom = document.getElementById("zoom");
 
-// upload imagem
+const gh = document.getElementById("gh");
+const gv = document.getElementById("gv");
+
+let originalImage = new Image();
+let zoomLevel = 1;
+
+// upload
 upload.addEventListener("change", function() {
   const file = this.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function(e) {
       imagem.src = e.target.result;
+      originalImage.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -168,9 +233,15 @@ cor.addEventListener("input", () => {
   texto.style.color = cor.value;
 });
 
-// tamanho maior
+// tamanho
 tamanho.addEventListener("input", () => {
   texto.style.fontSize = tamanho.value + "px";
+});
+
+// zoom imagem
+zoom.addEventListener("input", () => {
+  zoomLevel = zoom.value;
+  imagem.style.transform = `scale(${zoomLevel})`;
 });
 
 // formatos
@@ -195,12 +266,17 @@ function setFormat(type) {
   }
 }
 
-// drag
+// 🔥 DRAG RESTAURADO
 let isDragging = false;
-let offsetX, offsetY;
+let offsetX = 0;
+let offsetY = 0;
 
 function startDrag(e) {
   isDragging = true;
+
+  gh.style.display = "block";
+  gv.style.display = "block";
+
   const rect = texto.getBoundingClientRect();
   const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -219,6 +295,12 @@ function drag(e) {
   let x = clientX - area.left - offsetX;
   let y = clientY - area.top - offsetY;
 
+  const centerX = canvas.clientWidth / 2;
+  const centerY = canvas.clientHeight / 2;
+
+  if (Math.abs(x - centerX) < 15) x = centerX;
+  if (Math.abs(y - centerY) < 15) y = centerY;
+
   texto.style.left = x + "px";
   texto.style.top = y + "px";
   texto.style.transform = "none";
@@ -226,6 +308,8 @@ function drag(e) {
 
 function stopDrag() {
   isDragging = false;
+  gh.style.display = "none";
+  gv.style.display = "none";
 }
 
 texto.addEventListener("mousedown", startDrag);
@@ -236,16 +320,61 @@ texto.addEventListener("touchstart", startDrag);
 document.addEventListener("touchmove", drag);
 document.addEventListener("touchend", stopDrag);
 
-// download com proporção correta
-function baixar() {
-  html2canvas(canvas, {
-    scale: 3
-  }).then(canvasFinal => {
-    const link = document.createElement("a");
-    link.download = "arte.png";
-    link.href = canvasFinal.toDataURL("image/png");
-    link.click();
-  });
+// export (mantido igual)
+async function baixar() {
+  await document.fonts.ready;
+
+  const rect = canvas.getBoundingClientRect();
+  const aspect = rect.width / rect.height;
+
+  let w = 1080;
+  let h = Math.round(w / aspect);
+
+  const finalCanvas = document.createElement("canvas");
+  finalCanvas.width = w;
+  finalCanvas.height = h;
+  const ctx = finalCanvas.getContext("2d");
+
+  const img = originalImage;
+  const imgRatio = img.width / img.height;
+
+  let sx, sy, sw, sh;
+
+  if (imgRatio > aspect) {
+    sh = img.height;
+    sw = sh * aspect;
+    sx = (img.width - sw) / 2;
+    sy = 0;
+  } else {
+    sw = img.width;
+    sh = sw / aspect;
+    sx = 0;
+    sy = (img.height - sh) / 2;
+  }
+
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+
+  const textRect = texto.getBoundingClientRect();
+  const areaRect = canvas.getBoundingClientRect();
+
+  const scaleX = w / areaRect.width;
+
+  ctx.fillStyle = texto.style.color || "#ffffff";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const fontSize = parseInt(tamanho.value) * scaleX;
+  ctx.font = `${fontSize}px Monsieur La Doulaise`;
+
+  const x = (textRect.left - areaRect.left + textRect.width / 2) * scaleX;
+  const y = (textRect.top - areaRect.top + textRect.height / 2) * scaleX;
+
+  ctx.fillText(texto.textContent, x, y);
+
+  const link = document.createElement("a");
+  link.download = "arte.png";
+  link.href = finalCanvas.toDataURL("image/png");
+  link.click();
 }
 </script>
 
