@@ -32,7 +32,14 @@ body {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  width: 220px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .canvas {
@@ -41,7 +48,6 @@ body {
   height: 400px;
   background: #000;
   overflow: hidden;
-  border-radius: 0;
 }
 
 .canvas img {
@@ -56,21 +62,33 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Monsieur La Doulaise', cursive;
-  font-size: 60px;
+  font-size: 80px;
   color: white;
   text-align: center;
   cursor: grab;
   user-select: none;
 }
 
-.texto:active {
-  cursor: grabbing;
-}
-
 input, button {
   padding: 10px;
   border-radius: 8px;
   border: none;
+  cursor: pointer;
+}
+
+.format-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.format-buttons button {
+  flex: 1;
+  background: #222;
+  color: white;
+}
+
+.format-buttons button.active {
+  background: #555;
 }
 </style>
 </head>
@@ -80,16 +98,36 @@ input, button {
 <div class="container">
 
   <div class="controls">
-    <input type="file" id="upload">
-    <input type="text" id="textoInput" placeholder="digita aqui">
-    
-    <label>cor do texto</label>
-    <input type="color" id="cor" value="#ffffff">
 
-    <label>tamanho do texto</label>
-    <input type="range" id="tamanho" min="20" max="120" value="60">
+    <div class="section">
+      <input type="file" id="upload">
+    </div>
+
+    <div class="section">
+      <input type="text" id="textoInput" placeholder="digita aqui">
+    </div>
+
+    <div class="section">
+      <label>cor do texto</label>
+      <input type="color" id="cor" value="#ffffff">
+    </div>
+
+    <div class="section">
+      <label>tamanho do texto</label>
+      <input type="range" id="tamanho" min="20" max="200" value="80">
+    </div>
+
+    <div class="section">
+      <label>formato</label>
+      <div class="format-buttons">
+        <button onclick="setFormat('square')" class="active">1:1</button>
+        <button onclick="setFormat('portrait')">4:5</button>
+        <button onclick="setFormat('story')">9:16</button>
+      </div>
+    </div>
 
     <button onclick="baixar()">baixar</button>
+
   </div>
 
   <div class="canvas" id="area">
@@ -102,10 +140,11 @@ input, button {
 <script>
 const upload = document.getElementById("upload");
 const imagem = document.getElementById("imagem");
-const textoInput = document.getElementById("texto");
+const texto = document.getElementById("texto");
 const inputTexto = document.getElementById("textoInput");
 const cor = document.getElementById("cor");
 const tamanho = document.getElementById("tamanho");
+const canvas = document.getElementById("area");
 
 // upload imagem
 upload.addEventListener("change", function() {
@@ -129,16 +168,36 @@ cor.addEventListener("input", () => {
   texto.style.color = cor.value;
 });
 
-// tamanho
+// tamanho maior
 tamanho.addEventListener("input", () => {
   texto.style.fontSize = tamanho.value + "px";
 });
 
-// drag (mouse + touch)
+// formatos
+function setFormat(type) {
+  const buttons = document.querySelectorAll(".format-buttons button");
+  buttons.forEach(btn => btn.classList.remove("active"));
+  event.target.classList.add("active");
+
+  if (type === "square") {
+    canvas.style.width = "400px";
+    canvas.style.height = "400px";
+  }
+
+  if (type === "portrait") {
+    canvas.style.width = "400px";
+    canvas.style.height = "500px";
+  }
+
+  if (type === "story") {
+    canvas.style.width = "400px";
+    canvas.style.height = "711px";
+  }
+}
+
+// drag
 let isDragging = false;
 let offsetX, offsetY;
-
-const texto = document.getElementById("texto");
 
 function startDrag(e) {
   isDragging = true;
@@ -153,7 +212,7 @@ function startDrag(e) {
 function drag(e) {
   if (!isDragging) return;
 
-  const area = document.getElementById("area").getBoundingClientRect();
+  const area = canvas.getBoundingClientRect();
   const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
@@ -177,14 +236,14 @@ texto.addEventListener("touchstart", startDrag);
 document.addEventListener("touchmove", drag);
 document.addEventListener("touchend", stopDrag);
 
-// download com qualidade melhor
+// download com proporção correta
 function baixar() {
-  html2canvas(document.getElementById("area"), {
-    scale: 2
-  }).then(canvas => {
+  html2canvas(canvas, {
+    scale: 3
+  }).then(canvasFinal => {
     const link = document.createElement("a");
     link.download = "arte.png";
-    link.href = canvas.toDataURL("image/png", 1.0);
+    link.href = canvasFinal.toDataURL("image/png");
     link.click();
   });
 }
