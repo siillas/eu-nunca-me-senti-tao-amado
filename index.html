@@ -4,38 +4,44 @@
 <meta charset="UTF-8">
 <title>Generator</title>
 
-<!-- biblioteca para exportar imagem -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- fonte elegante -->
 <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
-  background: #0d0d0d;
+  background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
   color: white;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  gap: 30px;
+  background: #111;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
 }
 
 .controls {
-  margin: 20px;
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .canvas {
   position: relative;
-  width: 320px;
-  height: 320px;
+  width: 400px;
+  height: 400px;
   background: #000;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 0;
 }
 
 .canvas img {
@@ -53,39 +59,55 @@ body {
   font-size: 60px;
   color: white;
   text-align: center;
-  pointer-events: none;
+  cursor: grab;
+  user-select: none;
 }
 
-button, input {
+.texto:active {
+  cursor: grabbing;
+}
+
+input, button {
   padding: 10px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="controls">
-  <input type="file" id="upload">
-  <input type="text" id="textoInput" placeholder="digita aqui">
-  <input type="color" id="cor" value="#ffffff">
-  <button onclick="baixar()">baixar</button>
-</div>
+<div class="container">
 
-<div class="canvas" id="area">
-  <img id="imagem">
-  <div class="texto" id="texto">amor</div>
+  <div class="controls">
+    <input type="file" id="upload">
+    <input type="text" id="textoInput" placeholder="digita aqui">
+    
+    <label>cor do texto</label>
+    <input type="color" id="cor" value="#ffffff">
+
+    <label>tamanho do texto</label>
+    <input type="range" id="tamanho" min="20" max="120" value="60">
+
+    <button onclick="baixar()">baixar</button>
+  </div>
+
+  <div class="canvas" id="area">
+    <img id="imagem">
+    <div class="texto" id="texto">amor</div>
+  </div>
+
 </div>
 
 <script>
 const upload = document.getElementById("upload");
 const imagem = document.getElementById("imagem");
-const textoInput = document.getElementById("textoInput");
-const texto = document.getElementById("texto");
+const textoInput = document.getElementById("texto");
+const inputTexto = document.getElementById("textoInput");
 const cor = document.getElementById("cor");
+const tamanho = document.getElementById("tamanho");
 
-// upload da imagem
+// upload imagem
 upload.addEventListener("change", function() {
   const file = this.files[0];
   if (file) {
@@ -98,8 +120,8 @@ upload.addEventListener("change", function() {
 });
 
 // texto
-textoInput.addEventListener("input", () => {
-  texto.textContent = textoInput.value || "amor";
+inputTexto.addEventListener("input", () => {
+  texto.textContent = inputTexto.value || "amor";
 });
 
 // cor
@@ -107,12 +129,62 @@ cor.addEventListener("input", () => {
   texto.style.color = cor.value;
 });
 
-// baixar imagem
+// tamanho
+tamanho.addEventListener("input", () => {
+  texto.style.fontSize = tamanho.value + "px";
+});
+
+// drag (mouse + touch)
+let isDragging = false;
+let offsetX, offsetY;
+
+const texto = document.getElementById("texto");
+
+function startDrag(e) {
+  isDragging = true;
+  const rect = texto.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  offsetX = clientX - rect.left;
+  offsetY = clientY - rect.top;
+}
+
+function drag(e) {
+  if (!isDragging) return;
+
+  const area = document.getElementById("area").getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  let x = clientX - area.left - offsetX;
+  let y = clientY - area.top - offsetY;
+
+  texto.style.left = x + "px";
+  texto.style.top = y + "px";
+  texto.style.transform = "none";
+}
+
+function stopDrag() {
+  isDragging = false;
+}
+
+texto.addEventListener("mousedown", startDrag);
+document.addEventListener("mousemove", drag);
+document.addEventListener("mouseup", stopDrag);
+
+texto.addEventListener("touchstart", startDrag);
+document.addEventListener("touchmove", drag);
+document.addEventListener("touchend", stopDrag);
+
+// download com qualidade melhor
 function baixar() {
-  html2canvas(document.getElementById("area")).then(canvas => {
+  html2canvas(document.getElementById("area"), {
+    scale: 2
+  }).then(canvas => {
     const link = document.createElement("a");
     link.download = "arte.png";
-    link.href = canvas.toDataURL();
+    link.href = canvas.toDataURL("image/png", 1.0);
     link.click();
   });
 }
