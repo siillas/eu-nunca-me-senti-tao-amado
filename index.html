@@ -44,7 +44,7 @@ html {
   display: flex;
   gap: 30px;
   margin-top: 20px;
-  background: rgba(20, 25, 30, 0.55);
+  background: rgba(20, 25, 30, 0.45);
   padding: 25px;
   border-radius: 20px;
   backdrop-filter: blur(18px);
@@ -56,6 +56,13 @@ html {
   flex-direction: column;
   gap: 16px;
   width: 220px;
+}
+
+label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+  opacity: 0.6;
 }
 
 body {
@@ -94,6 +101,20 @@ label {
   border-radius: 14px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
   filter: saturate(1.05) contrast(1.05);
+}
+
+.color-palette {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.color-palette div {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.4);
 }
 
 .canvas img {
@@ -202,13 +223,16 @@ input[type="range"] {
 }
 
 button {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  color: white;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.6);
 }
 
 .format-buttons {
@@ -301,6 +325,7 @@ button:hover {
     max-width: 500px;
     padding: 15px;
     gap: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
   }
 
   .controls {
@@ -343,13 +368,26 @@ button:hover {
       <input type="text" id="textoInput" placeholder="digita aqui">
     </div>
 
-    <div class="section">
-      <label>cor do texto</label>
-      <div class="color-wrapper">
-        <div class="color-preview" onclick="document.getElementById('cor').click()"></div>
-        <input type="color" id="cor" value="#ffffff">
-      </div>
-    </div>
+   <div class="section">
+  <label>cor do texto</label>
+
+  <div class="color-wrapper">
+    <div class="color-preview" onclick="document.getElementById('cor').click()"></div>
+    <input type="color" id="cor" value="#ffffff">
+  </div>
+
+  <!-- 👇 COLOCA ISSO AQUI -->
+  <div class="color-palette">
+    <div style="background:#ffffff" onclick="setColor('#ffffff')"></div>
+    <div style="background:#000000" onclick="setColor('#000000')"></div>
+    <div style="background:#f2e6c9" onclick="setColor('#f2e6c9')"></div>
+    <div style="background:#d6c7a1" onclick="setColor('#d6c7a1')"></div>
+    <div style="background:#7f8f99" onclick="setColor('#7f8f99')"></div>
+    <div style="background:#5f6f7a" onclick="setColor('#5f6f7a')"></div>
+    <div style="background:#ffb27a" onclick="setColor('#ffb27a')"></div>
+  </div>
+
+</div>
 
     <div class="section">
       <label>tamanho do texto</label>
@@ -402,6 +440,11 @@ let zoomLevel = 1;
 function atualizarAltura(aspect) {
   const width = canvas.clientWidth;
   canvas.style.height = (width / aspect) + "px";
+}
+
+function setColor(c) {
+  texto.style.color = c;
+  cor.value = c;
 }
 
 upload.addEventListener("change", function() {
