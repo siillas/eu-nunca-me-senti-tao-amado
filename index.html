@@ -33,7 +33,11 @@ body {
   gap: 20px;
   padding: 30px 10px;
 
-  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+html {
+  height: 100%;
 }
 
 .container {
@@ -178,9 +182,11 @@ label {
 }
 
 input[type="color"] {
-  opacity: 0;
-  position: absolute;
-  pointer-events: none;
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 input, button {
