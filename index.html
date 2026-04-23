@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="color-scheme" content="light only">
 <title>Generator</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -53,8 +54,20 @@ body {
   width: 220px;
 }
 
+body {
+  background-color: #5f6f7a; /* cor base fixa */
+}
+
+html {
+  color-scheme: light;
+}
+
 html, body {
   height: 100%;
+}
+
+* {
+  forced-color-adjust: none;
 }
 
 .section {
