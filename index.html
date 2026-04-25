@@ -43,30 +43,24 @@ html {
 .container {
   display: flex;
   gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+
   margin-top: 20px;
   background: rgba(20, 25, 30, 0.45);
   padding: 25px;
   border-radius: 20px;
   backdrop-filter: blur(18px);
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-} 
+}
 
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 22px;
   width: 220px;
-}
-
-label {
-  font-size: 11px;
-  letter-spacing: 1px;
-  text-transform: lowercase;
-  opacity: 0.6;
-}
-
-body {
-  background-color: #5f6f7a; /* cor base fixa */
 }
 
 html {
@@ -88,15 +82,41 @@ html, body {
 }
 
 label {
-  font-size: 13px;
-  opacity: 0.7;
+  font-size: 11px;
+  opacity: 0.65;
+  letter-spacing: 0.8px;
+}
+
+.btn-download {
+  margin-top: 10px;
+
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+
+  padding: 14px;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.15),
+    rgba(255,255,255,0.05)
+  );
+
+  border: 1px solid rgba(255,255,255,0.3);
+
+  backdrop-filter: blur(10px);
+
+  color: white;
+
+  transition: all 0.25s ease;
 }
 
 .canvas {
   position: relative;
   width: 400px;
   height: 400px;
-  background: #000;
+  background: #0b0b0b;
   overflow: hidden;
   border-radius: 14px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
@@ -106,7 +126,6 @@ label {
 .color-palette {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
 }
 
 .color-palette div {
@@ -158,6 +177,67 @@ label {
   display: none;
 }
 
+#textoInput {
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+input[type="file"] {
+  font-size: 13px;
+  padding: 10px;
+}
+
+input[type="file"]::file-selector-button {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 8px rgba(255,255,255,0.4);
+}
+
+/* bolinha */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
+}
 .guia-horizontal {
   top: 50%;
   left: 0;
@@ -175,15 +255,16 @@ label {
 .color-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .color-preview {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid rgba(255,255,255,0.6);
+  border: 2px solid rgba(255,255,255,0.5);
+
   background: conic-gradient(
     red,
     orange,
@@ -194,8 +275,12 @@ label {
     violet,
     red
   );
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease;
+
+  box-shadow: 
+    0 0 10px rgba(0,0,0,0.3),
+    0 0 20px rgba(255,255,255,0.1) inset;
+
+  transition: all 0.2s ease;
 }
 
 .color-preview:hover {
@@ -203,31 +288,41 @@ label {
 }
 
 input[type="color"] {
-  width: 100%;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
 }
 
-input, button {
+input {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  backdrop-filter: blur(6px);
   padding: 10px;
-  border-radius: 8px;
-  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+button {
   cursor: pointer;
   font-family: inherit;
 }
 
 input[type="range"] {
-  accent-color: white;
+  accent-color: rgba(255,255,255,0.8);
 }
 
 button {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
   backdrop-filter: blur(6px);
   letter-spacing: 0.5px;
   transition: all 0.2s ease;
+  color: white;
 }
 
 button:hover {
@@ -240,24 +335,20 @@ button:hover {
   gap: 5px;
 }
 
-.titulo {
-  font-family: 'Monsieur La Doulaise', cursive;
-  font-size: 64px;
-  margin: 0 0 10px;
-  line-height: 0.9;
-  letter-spacing: 1px;
-}
-
-.titulo {
-  transform: scale(1.05);
-}
-
-.titulo {
-  text-shadow: 0 0 12px rgba(255,255,255,0.15);
-}
-
 .format-buttons button {
   flex: 1;
+  padding: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+}
+
+.format-buttons button.active {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
 }
 
 .header-box {
@@ -273,14 +364,17 @@ button:hover {
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 
   width: 100%;
-  max-width: 500px; /* acompanha a container */
+  max-width: 500px;
+
+  flex: 1;
 }
 
 .header-box h1 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 48px;
+  font-family: 'Monsieur La Doulaise', cursive;
+  font-weight: normal;
+  letter-spacing: 1px;
 }
 
 .header-box p {
@@ -290,32 +384,32 @@ button:hover {
   line-height: 1.4;
 }
 
-@media (max-width: 768px) {
+.header-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 15px;
 
-  .header-box {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 10px;
-  }
-
+  width: 100%;
+  max-width: 900px;
 }
 
-.format-buttons button.active {
-  background: #444;
-}
+.header-img {
+  width: 120px;
+  height: auto;
 
-@media (max-width: 768px) {
+  border-radius: 12px;
+  object-fit: cover;
 
- .titulo {
-  font-size: 48px;
-}
+  opacity: 0.9;
 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
 @media (max-width: 768px) {
 
   body {
-    align-items: flex-start;
+    align-items: center;
     padding: 15px;
   }
 
@@ -330,64 +424,102 @@ button:hover {
 
   .controls {
     width: 100%;
+    max-width: 240px;
   }
 
   .canvas {
     width: 100%;
+    max-width: 400px;
   }
 
   .texto {
     font-size: 60px;
   }
+
+  /* HEADER AJUSTADO */
+
+  .header-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .header-img {
+    width: 70px;
+  }
+
+  .header-box {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .header-box h1 {
+    font-size: 28px;
+  }
+
+  .header-box p {
+    font-size: 10px;
+  }
+
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="header-box">
-  <h1 class="titulo">Sïllas Generator</h1>
-  <p>
-    envie uma foto.<br>
-    escreva seu texto.<br>
-    ajuste posição e tamanho.<br>
-    escolha o formato.<br>
-    baixe sua arte.
-  </p>
+<div class="header-wrapper">
+
+  <img src="IMG/sillass.png" class="header-img left">
+
+  <div class="header-box">
+    <h1 class="titulo">Sïllas Generator</h1>
+    <p>
+      envie uma foto.<br>
+      escreva seu texto.<br>
+      ajuste posição e tamanho.<br>
+      escolha o formato.<br>
+      baixe sua arte.
+    </p>
+  </div>
+
+  <img src="IMG/TAO AMADO3.png" class="header-img right">
+
 </div>
 
 <div class="container">
 
   <div class="controls">
 
-    <div class="section">
-      <input type="file" id="upload" accept="image/*">
-    </div>
-
-    <div class="section">
-      <input type="text" id="textoInput" placeholder="digita aqui">
-    </div>
-
-   <div class="section">
-  <label>cor do texto</label>
-
-  <div class="color-wrapper">
-    <div class="color-preview" onclick="document.getElementById('cor').click()"></div>
-    <input type="color" id="cor" value="#ffffff">
+  <!-- 🔥 VOLTA ISSO -->
+  <div class="section">
+    <input type="file" id="upload" accept="image/*">
   </div>
 
-  <!-- 👇 COLOCA ISSO AQUI -->
-  <div class="color-palette">
-    <div style="background:#ffffff" onclick="setColor('#ffffff')"></div>
-    <div style="background:#000000" onclick="setColor('#000000')"></div>
-    <div style="background:#f2e6c9" onclick="setColor('#f2e6c9')"></div>
-    <div style="background:#d6c7a1" onclick="setColor('#d6c7a1')"></div>
-    <div style="background:#7f8f99" onclick="setColor('#7f8f99')"></div>
-    <div style="background:#5f6f7a" onclick="setColor('#5f6f7a')"></div>
-    <div style="background:#ffb27a" onclick="setColor('#ffb27a')"></div>
+  <div class="section">
+    <input type="text" id="textoInput" placeholder="digita aqui">
   </div>
 
-</div>
+  <!-- cor -->
+  <div class="section">
+    <label>cor do texto</label>
+
+    <div class="color-wrapper">
+      <div class="color-preview" onclick="document.getElementById('cor').click()"></div>
+
+      <div class="color-palette">
+        <div style="background:#ffffff" onclick="setColor('#ffffff')"></div>
+        <div style="background:#000000" onclick="setColor('#000000')"></div>
+        <div style="background:#f2e6c9" onclick="setColor('#f2e6c9')"></div>
+        <div style="background:#d6c7a1" onclick="setColor('#d6c7a1')"></div>
+        <div style="background:#5f6f7a" onclick="setColor('#5f6f7a')"></div>
+        <div style="background:#c9651d" onclick="setColor('#c9651d')"></div>
+      </div>
+
+      <input type="color" id="cor" value="#ffffff">
+    </div>
+  </div>
 
     <div class="section">
       <label>tamanho do texto</label>
@@ -408,7 +540,7 @@ button:hover {
   </div>
 </div>
 
-    <button onclick="baixar()">baixar</button>
+    <button class="btn-download" onclick="baixar()">baixar</button>
 
   </div>
 
