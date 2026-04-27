@@ -404,11 +404,11 @@ button:hover {
 }
 
 .header-img {
-  width: 120px;
+  width: 140px;
   aspect-ratio: 1 / 1;
 
-  border-radius: 12px;
   object-fit: cover;
+  border-radius: 12px;
 
   display: block;
 
@@ -447,28 +447,25 @@ button:hover {
   }
 
   .header-wrapper {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    margin: 0 auto;
   }
 
   .header-img {
-    flex: 0 0 70px;
-    width: 70px;
-    height: 70px;
-    aspect-ratio: 1 / 1;
+     width: 100%;
+     aspect-ratio: 3 / 4;
   }
 
-  .header-box {
-    flex: 1;
+ .header-box {
+    width: 100%;
     padding: 10px;
   }
 
   .header-box h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .header-box p {
