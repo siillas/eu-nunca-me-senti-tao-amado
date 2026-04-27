@@ -12,6 +12,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
 
 <style>
+:root {
+  color-scheme: light;
+}
+
 body {
   margin: 0;
  background: linear-gradient(
@@ -40,13 +44,17 @@ html {
   height: 100%;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 .container {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  max-width: 900px;
+  max-width: 100%;
 
   margin-top: 20px;
   background: rgba(20, 25, 30, 0.45);
@@ -64,7 +72,8 @@ html {
 }
 
 html {
-  color-scheme: light;
+  color-scheme: light !important;
+  background: #0b0b0b;
 }
 
 html, body {
@@ -386,7 +395,7 @@ button:hover {
 
 .header-wrapper {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   gap: 15px;
 
@@ -395,8 +404,8 @@ button:hover {
 }
 
 .header-img {
-  height: 100%;
   width: 120px;
+  aspect-ratio: 1 / 1;
 
   border-radius: 12px;
   object-fit: cover;
@@ -411,7 +420,8 @@ button:hover {
 
   body {
     align-items: center;
-    padding: 15px;
+    padding: 10px;
+    gap: 12px;
   }
 
   .container {
@@ -430,7 +440,6 @@ button:hover {
 
   .canvas {
     width: 100%;
-    max-width: 400px;
   }
 
   .texto {
@@ -440,23 +449,25 @@ button:hover {
   .header-wrapper {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 0 10px;
-    align-items: stretch;
+    width: 100%;
   }
 
   .header-img {
-    height: 70px;
-    width: 70px;
+    width: 20%;
+    max-width: 80px;
+    aspect-ratio: 1 / 1;
   }
 
   .header-box {
+    flex: 1;
     padding: 10px;
-    max-width: 100%;
   }
 
   .header-box h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .header-box p {
