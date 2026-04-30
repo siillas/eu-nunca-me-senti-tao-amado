@@ -416,7 +416,7 @@ button:hover {
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) and (orientation: landscape) {
 
   body {
     align-items: center;
@@ -484,6 +484,40 @@ button:hover {
 
   .header-box p {
     font-size: 11px;
+  }
+
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+
+  .header-wrapper {
+    display: grid;
+    grid-template-areas:
+      "left right"
+      "box box";
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .header-img.left {
+    grid-area: left;
+  }
+
+  .header-img.right {
+    grid-area: right;
+  }
+
+  .header-box {
+    grid-area: box;
+    width: 100%;
+  }
+
+  .header-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
   }
 
 }
