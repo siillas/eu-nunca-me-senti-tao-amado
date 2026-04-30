@@ -515,9 +515,25 @@ button:hover {
     width: 100%;
   }
 
+  .header-box h1 {
+    font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .header-img {
     width: 100%;
     aspect-ratio: 3 / 4;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .canvas {
+    order: -1;
   }
 
 }
@@ -555,7 +571,7 @@ button:hover {
   </div>
 
   <div class="section">
-    <input type="text" id="textoInput" placeholder="digita aqui">
+    <input type="text" id="textoInput" placeholder="digite aqui">
   </div>
 
   <!-- cor -->
