@@ -495,38 +495,32 @@ button:hover {
 @media (max-width: 768px) and (orientation: portrait) {
 
   .header-wrapper {
-    display: grid;
-    grid-template-areas:
-      "left right"
-      "box box";
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 12px;
+
     width: 100%;
-    max-width: 92px;
+    max-width: 320px;
     margin: 0 auto;
-    padding: 0 6px;
-  }
-
-  .header-img.left {
-    grid-area: left;
-  }
-
-  .header-img.right {
-    grid-area: right;
-  }
-
-  .header-box {
-    width: 100%;
-  }
-
-  .header-box h1 {
-    font-size: clamp(18px, 5vw, 22px);
-    line-height: 1.1;
   }
 
   .header-img {
     width: 100%;
+    max-width: 180px;
     aspect-ratio: 3 / 4;
+  }
+
+  .header-box {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .header-box h1 {
+    font-size: clamp(20px, 6vw, 26px);
+    line-height: 1.2;
+    text-align: center;
   }
 
 }
