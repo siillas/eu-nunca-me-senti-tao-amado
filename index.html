@@ -449,24 +449,37 @@ button:hover {
   }
 
   .header-wrapper {
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-areas:
+      "left right"
+      "box box";
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
-  .header-img {
-    width: 30%;
-    aspect-ratio: 3 / 4;
+  .header-img.left {
+    grid-area: left;
+  }
+
+  .header-img.right {
+    grid-area: right;
   }
 
   .header-box {
-    width: 85%;
-    max-width: 240px;
-    text-align: center;
+    grid-area: box;
+    width: 100%;
+  }
+
+  .header-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
   }
 
   .header-box h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .header-box p {
