@@ -7,9 +7,8 @@
 <meta name="color-scheme" content="light only">
 <title>S&M GENERATOR</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap" rel="stylesheet">
 
 <link rel="icon" type="image/png" href="favicon/favicon-96x96.png?v=v1" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg?v=v1" />
@@ -448,7 +447,7 @@ button:hover {
   .container {
     flex-direction: column;
     width: 100%;
-    max-width: border-box;
+    box-sizing: border-box;
     padding: 15px;
     gap: 20px;
     border: 1px solid rgba(255,255,255,0.08);
@@ -627,9 +626,9 @@ button:hover {
    <div class="section">
   <label>formato</label>
   <div class="format-buttons">
-    <button onclick="setFormat('square')" class="active">quadrado (1:1)</button>
-    <button onclick="setFormat('portrait')">retrato (4:5)</button>
-    <button onclick="setFormat('story')">story (9:16)</button>
+    <button onclick="setFormat(event, 'square')" class="active">quadrado (1:1)</button>
+    <button onclick="setFormat(event, 'portrait')">retrato (4:5)</button>
+    <button onclick="setFormat(event, 'story')">story (9:16)</button>
   </div>
 </div>
 
@@ -701,7 +700,7 @@ zoom.addEventListener("input", () => {
   imagem.style.transform = `scale(${zoomLevel})`;
 });
 
-function setFormat(type) {
+function setFormat(event, type) {
   const buttons = document.querySelectorAll(".format-buttons button");
   buttons.forEach(btn => btn.classList.remove("active"));
   event.target.classList.add("active");
@@ -802,12 +801,12 @@ async function baixar() {
 
   if (imgRatio > aspect) {
     sh = img.height;
-    sw = sh * aspect;
+    sw = sh * aspect / zoomFactor;
     sx = (img.width - sw) / 2;
     sy = 0;
   } else {
     sw = img.width;
-    sh = sw / aspect;
+    sh = sw / aspect / zoomFactor;
     sx = 0;
     sy = (img.height - sh) / 2;
   }
@@ -829,7 +828,12 @@ async function baixar() {
   const x = (textRect.left - areaRect.left + textRect.width / 2) * scaleX;
   const y = (textRect.top - areaRect.top + textRect.height / 2) * scaleX;
 
-  ctx.fillText(texto.textContent, x, y);
+  const lines = texto.textContent.split("\n");
+  const lineHeight = fontSize * 0.9;
+
+  lines.forEach((line, i) => {
+    ctx.fillText(line, x, y + (i * lineHeight));
+});
 
   const link = document.createElement("a");
   link.download = "arte.png";
