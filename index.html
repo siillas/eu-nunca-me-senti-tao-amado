@@ -44,7 +44,7 @@ body {
   gap: 20px;
   padding: 30px 10px;
 
-  min-height: 100dvh;
+  min-height: 100vh;
 }
 
 html {
@@ -82,11 +82,18 @@ body {
 
 html {
   color-scheme: light !important;
-  background: #0b0b0b;
 }
 
 html, body {
-  height: 100%;
+   min-height: 100%;
+   background: linear-gradient(
+    135deg,
+    #5f6f7a 0%,
+    #7f8f99 25%,
+    #aebbc4 50%,
+    #d6c7a1 75%,
+    #f2e6c9 100%
+  );
 }
 
 * {
