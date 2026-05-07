@@ -25,7 +25,6 @@
 
 body {
   margin: 0;
-
   background: linear-gradient(
     135deg,
     #5f6f7a 0%,
@@ -34,25 +33,23 @@ body {
     #d6c7a1 75%,
     #f2e6c9 100%
   );
-
   color: white;
   font-family: 'Cormorant Garamond', serif;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-
   gap: 20px;
   padding: 24px 16px;
-
   min-height: 100vh;
-
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 html {
   height: 100%;
+  color-scheme: light !important;
 }
 
 .container {
@@ -61,22 +58,16 @@ html {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-
   width: fit-content;
   min-width: 0;
   max-width: 1100px;
-
   margin: 0 auto;
-
   background: rgba(20, 25, 30, 0.45);
-
   padding: 25px;
-
   border-radius: 20px;
-
-  backdrop-filter: blur(18px);
-
+  backdrop-filter: blur(16px);
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: fadeUp 0.8s ease;
 }
 
 .controls {
@@ -84,10 +75,6 @@ html {
   flex-direction: column;
   gap: 22px;
   width: 220px;
-}
-
-html {
-  color-scheme: light !important;
 }
 
 html, body {
@@ -175,6 +162,7 @@ label {
   transform-origin: center;
   will-change: transform;
   cursor: grab;
+  transition: transform 0.05s linear;
 }
 
 .canvas img:active {
@@ -220,24 +208,63 @@ label {
   letter-spacing: 0.3px;
 }
 
-input[type="file"] {
-  font-size: 13px;
-  padding: 10px;
-}
+.upload-btn {
 
-input[type="file"]::file-selector-button {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.15),
+    rgba(255,255,255,0.05)
+  );
+
+  border: 1px solid rgba(255,255,255,0.3);
+
+  backdrop-filter: blur(10px);
+
   color: white;
-  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
   cursor: pointer;
-  transition: 0.2s;
+
+  transition: all 0.25s ease;
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-input[type="file"]::file-selector-button:hover {
-  background: rgba(255,255,255,0.25);
+.upload-btn:hover {
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.08)
+  );
+
+  border-color: rgba(255,255,255,0.45);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.upload-btn:active {
+
+  transform: scale(0.98);
 }
 
 input[type="range"] {
@@ -385,8 +412,12 @@ button:hover {
 }
 
 .format-buttons button.active {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.7);
+
+  box-shadow:
+    0 0 18px rgba(255,255,255,0.08),
+    inset 0 0 12px rgba(255,255,255,0.06);
 }
 
 .header-box {
@@ -577,6 +608,17 @@ button:hover {
     box-sizing: border-box;
   }
 
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 }
 
 </style>
@@ -608,8 +650,19 @@ button:hover {
   <div class="controls">
 
   <div class="section">
-    <input type="file" id="upload" accept="image/*">
-  </div>
+
+  <label for="upload" class="upload-btn">
+    ✦ escolher foto
+  </label>
+
+  <input
+    type="file"
+    id="upload"
+    accept="image/*"
+    hidden
+  >
+
+</div>
 
   <div class="section">
     <input type="text" id="textoInput" placeholder="digite aqui">
