@@ -86,6 +86,7 @@ html {
 
 html, body {
    min-height: 100%;
+   margin: 0;
    background: linear-gradient(
     135deg,
     #5f6f7a 0%,
@@ -146,6 +147,7 @@ label {
   border-radius: 14px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
   filter: saturate(1.05) contrast(1.05);
+  touch-action: none;
 }
 
 .color-palette {
@@ -166,6 +168,12 @@ label {
   height: 100%;
   object-fit: cover;
   transform-origin: center;
+  will-change: transform;
+  cursor: grab;
+}
+
+.canvas img:active {
+  cursor: grabbing;
 }
 
 .texto {
@@ -653,6 +661,13 @@ button:hover {
 </div>
 
 <script>
+let imgOffsetX = 0;
+let imgOffsetY = 0;
+
+let isDraggingImage = false;
+let startX = 0;
+let startY = 0;
+
 const upload = document.getElementById("upload");
 const imagem = document.getElementById("imagem");
 const texto = document.getElementById("texto");
@@ -682,10 +697,14 @@ upload.addEventListener("change", function() {
   const file = this.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      imagem.src = e.target.result;
-      originalImage.src = e.target.result;
-    };
+  reader.onload = function(e) {
+
+  originalImage.onload = () => {
+    imagem.src = e.target.result;
+  };
+
+  originalImage.src = e.target.result;
+};
     reader.readAsDataURL(file);
   }
 });
@@ -704,8 +723,64 @@ tamanho.addEventListener("input", () => {
 
 zoom.addEventListener("input", () => {
   zoomLevel = zoom.value;
-  imagem.style.transform = `scale(${zoomLevel})`;
+  updateImageTransform();
 });
+
+function updateImageTransform() {
+  imagem.style.transform =
+    `translate3d(${imgOffsetX}px, ${imgOffsetY}px, 0) scale(${zoomLevel})`;
+}
+
+imagem.addEventListener("mousedown", startImageDrag);
+imagem.addEventListener("touchstart", startImageDrag);
+
+document.addEventListener("mousemove", dragImage);
+document.addEventListener("touchmove", dragImage, { passive: false });
+
+document.addEventListener("mouseup", stopImageDrag);
+document.addEventListener("touchend", stopImageDrag);
+
+function startImageDrag(e) {
+  if (
+    e.target.tagName === "INPUT" &&
+    e.target.type === "range"
+  ) {
+    return;
+  }
+
+  e.preventDefault();
+
+  isDraggingImage = true;
+
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  startX = clientX - imgOffsetX;
+  startY = clientY - imgOffsetY;
+}
+
+function dragImage(e) {
+  if (!isDraggingImage) return;
+
+  if (
+    e.target.tagName !== "INPUT" &&
+    e.target.type !== "range"
+  ) {
+    e.preventDefault();
+  }
+
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  imgOffsetX = clientX - startX;
+  imgOffsetY = clientY - startY;
+
+  updateImageTransform();
+}
+
+function stopImageDrag() {
+  isDraggingImage = false;
+}
 
 function setFormat(event, type) {
   const buttons = document.querySelectorAll(".format-buttons button");
@@ -784,16 +859,19 @@ document.addEventListener("mousemove", drag);
 document.addEventListener("mouseup", stopDrag);
 
 texto.addEventListener("touchstart", startDrag);
-document.addEventListener("touchmove", drag);
+document.addEventListener("touchmove", drag, { passive: false });
 document.addEventListener("touchend", stopDrag);
 
 async function baixar() {
+
+if (document.fonts && document.fonts.ready) {
   await document.fonts.ready;
+}
 
   const rect = canvas.getBoundingClientRect();
   const aspect = rect.width / rect.height;
 
-  let w = 1080;
+  let w = 2160;
   let h = Math.round(w / aspect);
 
   const finalCanvas = document.createElement("canvas");
@@ -802,28 +880,45 @@ async function baixar() {
   const ctx = finalCanvas.getContext("2d");
 
   const img = originalImage;
-  const imgRatio = img.width / img.height;
+  if (!img.complete || img.naturalWidth === 0) {
+  alert("A imagem ainda está carregando.");
+  return;
+}
+  
+const imgRatio = img.width / img.height;
+const canvasRatio = rect.width / rect.height;
 
-  let sx, sy, sw, sh;
+let drawWidth;
+let drawHeight;
 
-  if (imgRatio > aspect) {
-    sh = img.height;
-    sw = sh * aspect / zoomFactor;
-    sx = (img.width - sw) / 2;
-    sy = 0;
-  } else {
-    sw = img.width;
-    sh = sw / aspect / zoomFactor;
-    sx = 0;
-    sy = (img.height - sh) / 2;
-  }
+if (imgRatio > canvasRatio) {
 
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+  drawHeight = h * zoomLevel;
+  drawWidth = drawHeight * imgRatio;
+
+} else {
+
+  drawWidth = w * zoomLevel;
+  drawHeight = drawWidth / imgRatio;
+
+}
+
+const dx = (w - drawWidth) / 2 + (imgOffsetX * (w / rect.width));
+const dy = (h - drawHeight) / 2 + (imgOffsetY * (h / rect.height));
+
+ctx.drawImage(
+  img,
+  dx,
+  dy,
+  drawWidth,
+  drawHeight
+);
 
   const textRect = texto.getBoundingClientRect();
   const areaRect = canvas.getBoundingClientRect();
 
   const scaleX = w / areaRect.width;
+  const scaleY = h / areaRect.height;
 
   ctx.fillStyle = texto.style.color || "#ffffff";
   ctx.textAlign = "center";
@@ -833,7 +928,7 @@ async function baixar() {
   ctx.font = `${fontSize}px Monsieur La Doulaise`;
 
   const x = (textRect.left - areaRect.left + textRect.width / 2) * scaleX;
-  const y = (textRect.top - areaRect.top + textRect.height / 2) * scaleX;
+  const y = (textRect.top - areaRect.top + textRect.height / 2) * scaleY;
 
   const lines = texto.textContent.split("\n");
   const lineHeight = fontSize * 0.9;
@@ -842,10 +937,27 @@ async function baixar() {
     ctx.fillText(line, x, y + (i * lineHeight));
 });
 
+  finalCanvas.toBlob((blob) => {
+
+  const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
+
+  link.href = url;
   link.download = "arte.png";
-  link.href = finalCanvas.toDataURL("image/png");
-  link.click();
+  link.style.display = "none";
+
+  document.body.appendChild(link);
+
+  setTimeout(() => {
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }, 100);
+
+}, "image/png");
 }
 
 // inicia como quadrado correto
